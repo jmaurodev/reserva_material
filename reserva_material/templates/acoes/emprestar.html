@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="alert alert-dark text-center text-white bg-dark" role="alert">
+  {{status}}
+</div>
+  <form action="emprestar" method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="id_identidade_empresta">Identidade Militar</label>
+      <!-- <input type="number" class="form-control" id="indentidadeEmpresta" aria-describedby="identidadeEmprestaHelp" placeholder="Identidade Militar de quem empresta"> -->
+      {{formulario.identidade_empresta}}
+      <small id="identidadeEmprestaHelp" class="form-text text-muted">Insira seu número de identidade sem traços</small>
+    </div>
+    <div class="form-group">
+      <label for="id_senha_empresta">Senha</label>
+      <!-- <input type="password" class="form-control" id="senhaEmpresta" placeholder="Senha"> -->
+      {{formulario.senha_empresta}}
+    </div>
+    <div class="form-group">
+      <label for="id_identidade_retira">Identidade Militar</label>
+      <!-- <input type="number" class="form-control" id="indentidadeRetira" aria-describedby="identidadeRetiraHelp" placeholder="Identidade Militar de quem retira"> -->
+      {{formulario.identidade_retira}}
+      <small id="identidadeRetiraHelp" class="form-text text-muted">Insira seu número de identidade sem traços</small>
+    </div>
+    <div class="form-group">
+      <label for="id_senha_retira">Senha</label>
+      <!-- <input type="password" class="form-control" id="senhaRetira" placeholder="Senha"> -->
+      {{formulario.senha_retira}}
+    </div>
+    <div class="form-group">
+      <label for="selecaoMaterial">Selecione o material</label>
+      <!-- <select id="selecaoMaterial" class="custom-select" multiple size="10">
+        {% for item in material %}
+        <option value="{{item.id}}">{{item.nome_material}} - {{item.numero_serie}}</option>
+        {% endfor %}
+      </select> -->
+      {{formulario.material_cautelado}}
+      <small id="identidadeEmprestaHelp" class="form-text text-muted">Segure a tecla Control ao clicar para selecionar múltiplos materiais</small>
+    </div>
+    <button type="submit" class="btn btn-primary">Emprestar</button>
+  </form>
+{% endblock %}

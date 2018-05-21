@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <table class="table table-dark text-white text-center">
+      <tr>
+        <th>NOME DO MATERIAL</th>
+        <th>QTD TOTAL</th>
+        <th>QTD EM RESERVA</th>
+        <th>QTD CAUTELADO</th>
+        <th>QTD INDISPONIVEL</th>
+        <th>QTD EM MANUTENÇÃO</th>
+        <th>NÚMERO DE SÉRIE</th>
+      </tr>
+
+      {% for item in material %}
+        <tr>
+          <th data-toggle="tooltip" data-placement="right" data-html="true"
+          title='<img src="/media/{{item.foto}}" height="100"/>'>
+          {{item.nome_material}}
+          </th>
+          <td>{{item.qtd_total}}</td>
+          <td>{{item.qtd_em_reserva}}</td>
+          <td>{{item.qtd_cautelado}}</td>
+          <td>{{item.qtd_indisponivel}}</td>
+          <td>{{item.qtd_em_manutencao}}</td>
+          <td>{{item.numero_serie}}</td>
+        </tr>
+      {% endfor %}
+    </table>
+{% endblock %}

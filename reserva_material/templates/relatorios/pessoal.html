@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <table class="table table-dark text-white text-center">
+      <tr>
+        <th>NOME DE GUERRA</th>
+        <th>IDENTIDADE MILITAR</th>
+        <th>TELEFONE</th>
+        <th>E-MAIL</th>
+        <th>QUARTEL ATUAL</th>
+      </tr>
+
+      {% for pessoa in pessoal %}
+        <tr>
+          <th data-toggle="tooltip" data-placement="right" data-html="true"
+          title='<img src="/media/{{pessoa.foto}}" height="200"/>'>
+          {{pessoa.posto_graduacao}} {{pessoa.nome_guerra}}
+          </th>
+          <td>{{pessoa.identidade_militar}}</td>
+          <td>{{pessoa.telefone_pessoal}}</td>
+          <td>{{pessoa.email}}</td>
+          <td>{{pessoa.quartel_atual}}</td>
+        </tr>
+      {% endfor %}
+    </table>
+{% endblock %}

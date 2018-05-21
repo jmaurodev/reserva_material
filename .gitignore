@@ -6,3 +6,12 @@ manage.py
 
 #Ignorar compilações automáticas
 __pycache__/
+
+#Ignorar modificações no banco de dados
+migrations/
+
+#Ignorar arquivos enviados
+media/
+
+#Ignorar arquivos estáticos da interface de administração
+static/

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <table class="table table-dark text-white text-center">
+      <tr>
+        <th>MATERIAL</th>
+        <th>EMPRESTOU</th>
+        <th>RETIROU</th>
+        <th>QUANTIDADE</th>
+      </tr>
+
+      {% for cautela in cautelas %}
+        <tr>
+          <th data-toggle="tooltip" data-placement="right" data-html="true"
+          title='<img src="/media/{{cautela.material_cautelado.foto}}" height="100"/>'>
+          {{cautela.material_cautelado}}
+          </th>
+          <th data-toggle="tooltip" data-placement="right" data-html="true"
+          title='<img src="/media/{{cautela.pessoa_retirou.foto}}" height="200"/>'>
+          {{cautela.pessoa_retirou.posto_graduacao}} {{cautela.pessoa_retirou.nome_guerra}}
+          </th>
+          <th data-toggle="tooltip" data-placement="right" data-html="true"
+          title='<img src="/media/{{cautela.pessoa_emprestou.foto}}" height="200"/>'>
+          {{cautela.pessoa_emprestou.posto_graduacao}} {{cautela.pessoa_emprestou.nome_guerra}}
+          </th>
+          <td>{{cautela.quantitativo}}</td>
+        </tr>
+      {% endfor %}
+    </table>
+{% endblock %}
