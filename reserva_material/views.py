@@ -1,6 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from reportlab.pdfgen import canvas
+from reportlab.platypus import Table, TableStyle
+from reportlab.lib.units import mm
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
 from time import gmtime, strftime
 from reserva_material.models import Pessoa, Quartel, Material, Cautela
 from .forms import emprestarForm
@@ -86,8 +90,27 @@ def imprimir_pronto(request):
     datahora = strftime("%d-%m-%Y %H:%M:%S", gmtime())
     filename = 'PRONTO_%s' % (datahora)
     response['Content-Disposition'] = 'attachment; filename="%s.pdf"' % (filename)
-    p = canvas.Canvas(response)
-    p.drawString(100, 100, 'Hello')
+    p = canvas.Canvas(response, pagesize=A4)
+    width, height = A4
+    header = ['Nome do Material', 'Total', 'Rsv', 'Cautelado', 'Indisp', 'Mnt']
+    data = []
+    data.append(header)
+    material = Material.objects.all()
+    for item in material:
+        data.append([item.nome_material, item.qtd_total, item.qtd_em_reserva, item.qtd_cautelado, item.qtd_indisponivel, item.qtd_em_manutencao])
+    t = Table(data)
+    t.setStyle(TableStyle([
+    ('FONTNAME', (0,0), (-1,-1), 'Times-Roman'),
+    ('BOX', (0,0), (-1,-1), 2, colors.black),
+    ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+    ('BOX', (0,0), (-1,0), 2, colors.black),
+    ('INNERGRID', (0,0), (-1,0), 2, colors.black),
+    ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+    ('VALIGN', (0,0), (-1,-1), 'MIDDLE')
+    ]))
+    t.wrapOn(p, width, height)
+    t.drawOn(p, 5*mm, 5*mm)
+
     p.showPage()
     p.save()
     return response
