@@ -45,13 +45,10 @@ class Quartel(models.Model):
 class Material(models.Model):
     nome_material = models.CharField(max_length=100)
     descricao = models.TextField(null=True, blank=True)
-    # Campo desnecessario, tendo em vista que as informacoes do siscofis sempre estao desatualizadas
-    # qtd_siscofis = models.IntegerField()
-    qtd_total = models.IntegerField(default=1, help_text='Inserido no momento do registro do material')
-    qtd_em_reserva = models.IntegerField(default=1, help_text='Gerado automaticamente pelo sistema')
-    qtd_cautelado = models.IntegerField(default=0, help_text='Gerado automaticamente pelo sistema')
-    qtd_indisponivel = models.IntegerField(default=0)
-    qtd_em_manutencao = models.IntegerField(default=0)
+    em_reserva = models.BooleanField(default=True, help_text='O material encontra-se na reserva?')
+    em_cautela = models.BooleanField(default=False, help_text='O material encontra-se cautelado?')
+    em_manutencao = models.BooleanField(default=False, help_text='O material encontra-se em manutenção?')
+    indisponivel = models.BooleanField(default=False, help_text='O material encontra-se indisponível?')
     numero_serie = models.CharField(max_length=20, null=True, blank=True)
     foto = models.ImageField(upload_to='images/material/', null=True, blank=True, help_text='Imagem do material')
     def __str__(self):
