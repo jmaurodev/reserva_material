@@ -2,29 +2,38 @@
 {% load static %}
 
 {% block content %}
-    <table class="table table-dark text-white text-center">
+    <table class="table table-dark table-striped text-white text-center">
       <tr>
         <th>NOME DO MATERIAL</th>
-        <th>QTD TOTAL</th>
-        <th>QTD EM RESERVA</th>
-        <th>QTD CAUTELADO</th>
-        <th>QTD INDISPONIVEL</th>
-        <th>QTD EM MANUTENÇÃO</th>
+        <th>SITUAÇÃO</th>
         <th>NÚMERO DE SÉRIE</th>
+        <th>ALTERAÇÕES</th>
       </tr>
 
       {% for item in material %}
         <tr>
           <th data-toggle="tooltip" data-placement="right" data-html="true"
           title='<img src="/media/{{item.foto}}" height="100"/>'>
-          {{item.nome_material}}
-          </th>
-          <td>{{item.qtd_total}}</td>
-          <td>{{item.qtd_em_reserva}}</td>
-          <td>{{item.qtd_cautelado}}</td>
-          <td>{{item.qtd_indisponivel}}</td>
-          <td>{{item.qtd_em_manutencao}}</td>
-          <td>{{item.numero_serie}}</td>
+          {{item.nome_material}}</th>
+          {% if item.em_reserva %}
+            <td>RESERVA</td>
+          {% elif item.em_cautela %}
+            <td>CAUTELADO</td>
+          {% elif item.em_manutencao %}
+            <td>MANUTENÇÃO</td>
+          {% elif item.indisponivel %}
+            <td>INDISPONÍVEL</td>
+          {% endif %}
+          {% if not item.numero_serie %}
+            <td>S/N</td>
+          {% else %}
+            <td>{{item.numero_serie}}</td>
+          {% endif %}
+          {% if not item.descricao %}
+            <td>S/A</td>
+          {% else %}
+            <td>{{item.descricao}}</td>
+          {% endif %}
         </tr>
       {% endfor %}
     </table>

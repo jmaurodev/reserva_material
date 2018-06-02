@@ -2,24 +2,24 @@
 {% load static %}
 
 {% block content %}
-    <table class="table table-striped table-dark">
+    <table class="table table-striped table-dark text-white text-center">
       <tr>
-        <th scope="col" style="text-align: center;">NOME</th>
-        <th scope="col" style="text-align: center;">TOTAL</th>
-        <th scope="col" style="text-align: center;">EM RESERVA</th>
-        <th scope="col" style="text-align: center;">CAUTELADOS</th>
-        <th scope="col" style="text-align: center;">NUMERO DE SÉRIE</th>
-        <th scope="col" style="text-align: center;">ALTERAÇÕES</th>
+        <th>NOME</th>
+        <th>TOTAL</th>
+        <th>EM RESERVA</th>
+        <th>CAUTELADOS</th>
+        <th>NUMERO DE SÉRIE</th>
+        <th>ALTERAÇÕES</th>
       </tr>
 
       {% for material in materiais %}
         <tr>
-          <th scope="row" style="text-align: center;" data-toggle="tooltip" data-placement="right" data-html="true" title='<img src="/media/{{material.foto}}" height="100"/>'>{{material.nome_material}}</th>
-          <td style="text-align: center;">{{material.qtd_total}}</td>
-          <td style="text-align: center;">{{material.qtd_em_reserva}}</td>
-          <td style="text-align: center;">{{material.qtd_cautelado}}</td>
-          <td style="text-align: center;">{{material.numero_serie}}</td>
-          <td style="text-align: center;">{{material.descricao}}</td>
+          <th data-toggle="tooltip" data-placement="right" data-html="true" title='<img src="/media/{{material.foto}}" height="100"/>'>{{material.nome_material}}</th>
+          <td>{{material.qtd_total}}</td>
+          <td>{{material.qtd_em_reserva}}</td>
+          <td>{{material.qtd_cautelado}}</td>
+          <td>{{material.numero_serie}}</td>
+          <td>{{material.descricao}}</td>
         </tr>
       {% endfor %}
     </table>
