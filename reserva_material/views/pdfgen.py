@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.db.models import Count
+from django.contrib.auth.decorators import login_required
 from time import gmtime, strftime
 from reserva_material.models import Material
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
-
 width, height = A4
 
 def gerar_pdf(request, titulo):
@@ -81,6 +81,7 @@ def gerar_rodape(canvas, texto):
     canvas.drawRightString(width-10, 10, texto)
     return canvas
 
+@login_required
 def imprimir_pronto(request):
     response = gerar_pdf(request, 'PRONTO')
     c = canvas.Canvas(response, pagesize=A4)
@@ -94,6 +95,7 @@ def imprimir_pronto(request):
     c.save()
     return response
 
+@login_required
 def imprimir_cautela(request):
     response = gerar_pdf(request, 'CAUTELA')
     c = canvas.Canvas(response, pagesize=A4)

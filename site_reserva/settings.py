@@ -124,3 +124,8 @@ STATIC_URL = '/static/'
 
 MEDIA_ROOT = '/Users/Mauro/project/site_reserva/media/'
 MEDIA_URL = '/media/'
+
+# Authentication
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
+LOGIN_REDIRECT_URL = 'index'

@@ -1,6 +1,8 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from reserva_material.models import Pessoa, Quartel, Material, Cautela
 
+@login_required
 def index(request):
     return render(request, 'index.html')
 
@@ -32,9 +34,5 @@ def cautelas_vencidas(request):
     }
     return render(request, 'relatorios/cautelas_vencidas.html', context)
 
-def pronto(request):
-    materiais = Material.objects.all()
-    context = {
-        'materiais': materiais,
-    }
-    return render(request, 'relatorios/pronto.html', context)
+def deslogado(request):
+    return render(request, 'acesso/deslogado.html')

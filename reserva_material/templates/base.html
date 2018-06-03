@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Sistema de Gerenciamento de Material | github.com/jmaurodev</title>
+    <title>{% block title %}{% endblock %} | Sistema de Gerenciamento de Material</title>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
@@ -43,7 +43,7 @@
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Relatório
+            Relatórios
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <a class="dropdown-item" href="pessoal">Pessoal</a>
@@ -55,20 +55,27 @@
           </div>
         </li>
         </ul>
-        <form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="search" placeholder="Pessoa ou material" aria-label="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
-        </form>
+      </div>
+      <div>
+        {% if not request.user.username %}
+        <span class="navbar-brand">Não autenticado!</span>
+        {% else %}
+        <span class="text-white">Logado como:</span>
+        <span class="navbar-brand">{{request.user.username|upper}}</span>
+        {% endif %}
+      </div>
+      <div>
+        <a href="{% url 'logout' %}" class="fas fa-power-off fa-2x"></a>
       </div>
     </nav>
   </header>
 
-    <div class="container-fluid">
+    <div class="container">
         {% block content %}
         {% endblock %}
     </div>
 
-    <footer class="footer">
+    <footer class="card-footer" style="position: absolute; bottom: 0; width: 100%;">
       <div class="card text-center text-white bg-dark mb-3">
         <div class="card-header">
           Desenvolvimento

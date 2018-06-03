@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
+{% block title %}Index{% endblock %}
+
 {% block content %}
 <div class="alert alert-dark text-center text-white bg-dark" role="alert">
-  {{status}}
+  Seja bem vindo, {{request.user.username|upper}}!
 </div>
 {% endblock %}

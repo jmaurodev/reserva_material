@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from reserva_material.models import Pessoa, Quartel, Material, Cautela
 from reserva_material.forms import emprestarForm
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def emprestar(request):
     status = ''
     if request.method == 'POST':
@@ -29,6 +31,7 @@ def emprestar(request):
     }
     return render(request, 'acoes/emprestar.html', context)
 
+@login_required
 def receber(request):
     pessoal = Pessoa.objects.all()
     material = Material.objects.all()
