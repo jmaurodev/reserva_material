@@ -1,6 +1,8 @@
 from django import forms
 from reserva_material.models import Material
 
+lista_materiais = []
+
 class emprestarForm(forms.Form):
     attrs_idt_empresta = {
         'class': 'form-control',
@@ -26,13 +28,8 @@ class emprestarForm(forms.Form):
         'placeholder': 'Identidade Militar de quem empresta',
     }
 
-    material = Material.objects.all()
-    lista_materiais = []
-    for item in material:
-        lista_materiais.append((item.id, ('%s - %s' % (item.nome_material, item.numero_serie))))
-
-    identidade_empresta = forms.IntegerField(min_value=0, max_value=9999999999, widget=forms.NumberInput(attrs=attrs_idt_empresta))
+    identidade_empresta = forms.IntegerField(min_value=0, max_value=9999999999, initial="0202691879", widget=forms.NumberInput(attrs=attrs_idt_empresta))
     senha_empresta = forms.CharField(widget=forms.PasswordInput(attrs=attrs_senha_empresta))
-    identidade_retira = forms.IntegerField(min_value=0, max_value=9999999999, widget=forms.NumberInput(attrs=attrs_idt_retira))
+    identidade_retira = forms.IntegerField(min_value=0, max_value=9999999999, initial="1111111111", widget=forms.NumberInput(attrs=attrs_idt_retira))
     senha_retira = forms.CharField(widget=forms.PasswordInput(attrs=attrs_senha_retira))
-    material_cautelado = forms.ChoiceField(choices=lista_materiais, widget=forms.Select(attrs=attrs_mat_cautelado))
+    material_cautelado = forms.ModelMultipleChoiceField(queryset=Material.objects.filter(em_reserva=True), initial=lista_materiais, widget=forms.SelectMultiple(attrs=attrs_mat_cautelado))
