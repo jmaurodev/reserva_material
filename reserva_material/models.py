@@ -62,3 +62,5 @@ class Cautela(models.Model):
     inicio_cautela = models.DateTimeField(auto_now_add=True, editable=True, help_text='')
     fim_cautela = models.DateTimeField(editable=True, help_text='Padrão de 30 dias')
     vencida = models.BooleanField(default=False, help_text='Sinaliza se a cautela está vencida')
+    data_devolucao = models.DateTimeField(editable=True, help_text='Quando foi devolvido')
+    devolvido = models.BooleanField(default=False)

@@ -3,8 +3,26 @@
 
 {% block title %}Receber Material{% endblock %}
 
-  <form>
-    {% block content %}
-
-    {% endblock %}
+{% block content %}
+<div class="alert alert-dark text-center text-white bg-dark" role="alert">
+  {{status}}
+</div>
+  <form action="receber" method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="id_identidade_recebe">Identidade Militar</label>
+      {{formulario.identidade_recebe}}
+      <small id="identidadeEmprestaHelp" class="form-text text-muted">Insira seu número de identidade sem traços</small>
+    </div>
+    <div class="form-group">
+      <label for="id_senha_recebe">Senha</label>
+      {{formulario.senha_recebe}}
+    </div>
+    <div class="form-group">
+      <label for="selecaoMaterial">Selecione o material</label>
+      {{formulario.material_recebido}}
+      <small id="identidadeRecebeHelp" class="form-text text-muted">Segure a tecla Control ao clicar para selecionar múltiplos materiais</small>
+    </div>
+    <button type="submit" class="btn btn-primary">Receber</button>
   </form>
+{% endblock %}

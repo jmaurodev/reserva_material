@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from reserva_material.models import Pessoa, Quartel, Material, Cautela
-from reserva_material.forms import emprestarForm
+from reserva_material.forms import emprestarForm, receberForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import HttpResponseRedirect, HttpResponse
@@ -43,12 +43,26 @@ def emprestar(request):
 
 @login_required
 def receber(request):
-    pessoal = Pessoa.objects.all()
-    material = Material.objects.all()
-    cautelas = Cautela.objects.all()
-    context = {
-        'pessoal': pessoal,
-        'material': material,
-        'cautelas': cautelas,
-    }
-    return render(request, 'acoes/receber.html', context)
+    if request.method == 'POST':
+        formulario = receberForm(request.POST)
+        if formulario.is_valid():
+            identidade_recebe = request.POST.get('identidade_recebe')
+            senha_recebe = request.POST.get('senha_recebe')
+            lista_materiais = request.POST.getlist('material_recebido')
+            quantitativo = 1
+            try:
+                pessoa_empresta = Pessoa.objects.get(identidade_militar=identidade_recebe, senha=senha_recebe)
+            except:
+                return HttpResponse('<center><h1>Usuário ou senha <u>INCORRETA</u>!</h1></center>', status=400)
+            for item in lista_materiais:
+                item = Material.objects.get(id=item)
+                item.em_cautela = False
+                item.em_reserva = True
+                cautela = Cautela.objects.filter(material_cautelado=item)[0]
+                cautela.devolvido = True
+                cautela.data_devolucao = timezone.now()
+                cautela.save()
+                item.save()
+    else:
+        formulario = receberForm()
+    return render(request, 'acoes/receber.html', {'formulario': formulario})
