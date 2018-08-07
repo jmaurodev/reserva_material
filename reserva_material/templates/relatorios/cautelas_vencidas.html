@@ -4,22 +4,36 @@
 {% block title %}Cautelas Vencidas{% endblock %}
 
 {% block content %}
-    <table class="table table-striped table-dark">
+    <table class="table table-striped table-dark text-center">
       <tr>
-        <th scope="col" style="text-align: center;" data-toggle="tooltip" title="Nome do militar que retirou o equipamento">RETIROU</th>
-        <th scope="col" style="text-align: center;" data-toggle="tooltip" title="Nome do miltar que emprestou o equipamento">EMPRESTOU</th>
-        <th scope="col" style="text-align: center;">MATERIAL</th>
-        <th scope="col" style="text-align: center;">QUANTIDADE</th>
-        <th scope="col" style="text-align: center;" data-toggle="tooltip" title="Data em que terminou o período de cautela do material">TÉRMINO DA CAUTELA</th>
+        <th data-toggle="tooltip" title="Nome do militar que retirou o equipamento">RETIROU</th>
+        <th data-toggle="tooltip" title="Nome do miltar que emprestou o equipamento">EMPRESTOU</th>
+        <th>MATERIAL</th>
+        <th data-toggle="tooltip" data-html="true" title="VERDE - data da devolução<br>AMARELO -início da cautela<br>VERMELHO - fim do período da cautela">DATA</th>
+        <th>SITUAÇÃO</th>
       </tr>
 
       {% for cautela in cautelas %}
-        <tr>
-          <th scope="row" style="text-align: center;" data-toggle="tooltip" data-placement="right" data-html="true" title='<img src="/media/{{cautela.pessoa_retirou.foto}}" height="200"/>' onclick="myPopup({{cautela.pessoa_retirou.telefone_pessoal}})">{{cautela.pessoa_retirou.posto_graduacao}} {{cautela.pessoa_retirou.nome_guerra}}</th>
-          <td style="text-align: center;" data-toggle="tooltip" data-placement="right" data-html="true" title='<img src="/media/{{cautela.pessoa_emprestou.foto}}" height="200"/>' >{{cautela.pessoa_emprestou.posto_graduacao}} {{cautela.pessoa_emprestou.nome_guerra}}</td>
-          <td style="text-align: center;" data-toggle="tooltip" data-placement="right" data-html="true" title='<img src="/media/{{cautela.material_cautelado.foto}}" height="100"/>'>{{cautela.material_cautelado}}</td>
-          <td style="text-align: center;">{{cautela.quantitativo}}</td>
-          <td style="text-align: center;">{{cautela.fim_cautela}}</td>
+      {% if cautela.vencida %}
+      <tr class="text-danger">
+      {% elif cautela.devolvido %}
+      <tr class="text-success">
+      {% else %}
+      <tr class="text-warning">
+      {% endif %}
+          <th data-toggle="tooltip" data-placement="right" data-html="true" title='<img src="/media/{{cautela.pessoa_retirou.foto}}" height="200"/>' onclick="myPopup({{cautela.pessoa_retirou.telefone_pessoal}})">{{cautela.pessoa_retirou.posto_graduacao}} {{cautela.pessoa_retirou.nome_guerra}}</th>
+          <td data-toggle="tooltip" data-placement="right" data-html="true" title='<img src="/media/{{cautela.pessoa_emprestou.foto}}" height="200"/>' >{{cautela.pessoa_emprestou.posto_graduacao}} {{cautela.pessoa_emprestou.nome_guerra}}</td>
+          <td data-toggle="tooltip" data-placement="right" data-html="true" title='<img src="/media/{{cautela.material_cautelado.foto}}" height="200"/>'>{{cautela.material_cautelado}}</td>
+          {% if cautela.vencida %}
+            <td>{{cautela.fim_cautela}}</td>
+            <td>VENCIDA</td>
+          {% elif cautela.devolvido %}
+            <td>{{cautela.data_devolucao}}</td>
+            <td>FECHADA</td>
+          {% else %}
+            <td>{{cautela.inicio_cautela}}</td>
+            <td>ABERTA</td>
+          {% endif %}
         </tr>
       {% endfor %}
     </table>

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load filters %}
 
 {% block title %}Receber Material{% endblock %}
 
@@ -11,16 +12,16 @@
     {% csrf_token %}
     <div class="form-group">
       <label for="id_identidade_recebe">Identidade Militar</label>
-      {{formulario.identidade_recebe}}
+      {{formulario.identidade_recebe|addclass:'form-control'}}
       <small id="identidadeEmprestaHelp" class="form-text text-muted">Insira seu número de identidade sem traços</small>
     </div>
     <div class="form-group">
       <label for="id_senha_recebe">Senha</label>
-      {{formulario.senha_recebe}}
+      {{formulario.senha_recebe|addclass:'form-control'}}
     </div>
     <div class="form-group">
       <label for="selecaoMaterial">Selecione o material</label>
-      {{formulario.material_recebido}}
+      {{formulario.material_recebido|addclass:'form-control'}}
       <small id="identidadeRecebeHelp" class="form-text text-muted">Segure a tecla Control ao clicar para selecionar múltiplos materiais</small>
     </div>
     <button type="submit" class="btn btn-primary">Receber</button>
