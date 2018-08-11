@@ -48,7 +48,7 @@ def gerar_texto_cautela(canvas, posicao_y):
         canvas.drawString(30, posicao_y, linha)
         posicao_y -= 10
     posicao_y -= 10
-    return canvas
+    return canvas, posicao_y
 
 def gerar_tabela(canvas, posicao_y):
     header = ['Nome do Material', 'Total', 'Rsv?', 'Cautelado?', 'Mnt?', 'Indisp?']
@@ -81,6 +81,33 @@ def gerar_rodape(canvas, texto):
     canvas.drawRightString(width-10, 10, texto)
     return canvas
 
+def gerar_tabela_cautela(canvas, posicao_y):
+    header = ['Nome do Material', 'Total', 'Rsv?', 'Cautelado?', 'Mnt?', 'Indisp?']
+    data = []
+    data.append(header)
+    material = Material.objects.values('nome_material').annotate(total=Count('nome_material'))
+    for item in material:
+        nome = item.get('nome_material')
+        qtd_total = item.get('total')
+        qtd_em_reserva = len(Material.objects.filter(nome_material=nome, em_reserva=True))
+        qtd_em_cautela = len(Material.objects.filter(nome_material=nome, em_cautela=True))
+        qtd_em_manutencao = len(Material.objects.filter(nome_material=nome, em_manutencao=True))
+        qtd_indisponivel = len(Material.objects.filter(nome_material=nome, indisponivel=True))
+        data.append([nome, qtd_total, qtd_em_reserva, qtd_em_cautela, qtd_em_manutencao, qtd_indisponivel])
+    table = Table(data)
+    table.setStyle(TableStyle([
+    ('FONTNAME', (0,0), (-1,-1), 'Times-Roman'),
+    ('BOX', (0,0), (-1,-1), 2, colors.black),
+    ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+    ('BOX', (0,0), (-1,0), 2, colors.black),
+    ('INNERGRID', (0,0), (-1,0), 2, colors.black),
+    ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+    ('VALIGN', (0,0), (-1,-1), 'MIDDLE')
+    ]))
+    table.wrapOn(canvas, width, height)
+    table.drawOn(canvas, 20, posicao_y-20*len(data))
+    return canvas
+
 @login_required
 def imprimir_pronto(request):
     response = gerar_pdf(request, 'PRONTO')
@@ -100,7 +127,10 @@ def imprimir_cautela(request):
     response = gerar_pdf(request, 'CAUTELA')
     c = canvas.Canvas(response, pagesize=A4)
     c, posicao_y = gerar_cabecalho(c)
-    c = gerar_texto_cautela(c, posicao_y)
+    c.setFont('Times-Roman', 12)
+    c, posicao_y = gerar_texto_cautela(c, posicao_y)
+    c = gerar_tabela_cautela(c, posicao_y)
+    c.drawString(c , posicao_y, request.GET.get('identidade_empresta'))
     c.showPage()
     c.save()
     return response

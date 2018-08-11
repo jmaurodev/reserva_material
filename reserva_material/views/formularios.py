@@ -37,6 +37,7 @@ def emprestar(request):
                 )
                 cautela.save()
                 item.save()
+            return HttpResponseRedirect(reverse('imprimir_cautela'))
     else:
         formulario = emprestarForm()
     return render(request, 'acoes/emprestar.html', {'formulario': formulario})
@@ -56,7 +57,7 @@ def receber(request):
                 return HttpResponse('<center><h1>Usuário ou senha <u>INCORRETA</u>!</h1></center>', status=400)
             for item in lista_materiais:
                 item = Material.objects.get(id=item)
-                cautela = Cautela.objects.filter(material_cautelado=item).order_by('inicio_cautela')[0]
+                cautela = Cautela.objects.filter(material_cautelado=item).order_by('-inicio_cautela')[0]
                 if cautela.pessoa_emprestou == pessoa_recebe:
                     item.em_cautela = False
                     item.em_reserva = True
