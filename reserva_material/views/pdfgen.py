@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from time import gmtime, strftime
-from reserva_material.models import Material
+from reserva_material.models import Material, Cautela, Pessoa
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle
 from reportlab.lib.pagesizes import A4
@@ -82,18 +82,17 @@ def gerar_rodape(canvas, texto):
     return canvas
 
 def gerar_tabela_cautela(canvas, posicao_y):
-    header = ['Nome do Material', 'Total', 'Rsv?', 'Cautelado?', 'Mnt?', 'Indisp?']
+    header = ['Quantidade', 'Nome do Material', 'Número de Série', 'Alterações']
     data = []
     data.append(header)
-    material = Material.objects.values('nome_material').annotate(total=Count('nome_material'))
-    for item in material:
-        nome = item.get('nome_material')
-        qtd_total = item.get('total')
-        qtd_em_reserva = len(Material.objects.filter(nome_material=nome, em_reserva=True))
-        qtd_em_cautela = len(Material.objects.filter(nome_material=nome, em_cautela=True))
-        qtd_em_manutencao = len(Material.objects.filter(nome_material=nome, em_manutencao=True))
-        qtd_indisponivel = len(Material.objects.filter(nome_material=nome, indisponivel=True))
-        data.append([nome, qtd_total, qtd_em_reserva, qtd_em_cautela, qtd_em_manutencao, qtd_indisponivel])
+    pessoa = Pessoa.objects.all()[0]
+    cautela = Cautela.objects.filter(pessoa_retirou=pessoa)
+    for registro in cautela:
+        quantidade = 1
+        nome = registro.material_cautelado.nome_material
+        numero_serie = registro.material_cautelado.numero_serie
+        alteracoes = registro.material_cautelado.descricao
+        data.append([quantidade, nome, numero_serie, alteracoes])
     table = Table(data)
     table.setStyle(TableStyle([
     ('FONTNAME', (0,0), (-1,-1), 'Times-Roman'),
@@ -130,7 +129,7 @@ def imprimir_cautela(request):
     c.setFont('Times-Roman', 12)
     c, posicao_y = gerar_texto_cautela(c, posicao_y)
     c = gerar_tabela_cautela(c, posicao_y)
-    c.drawString(c , posicao_y, request.GET.get('identidade_empresta'))
+    c.drawString(100, 100, "teste")
     c.showPage()
     c.save()
     return response

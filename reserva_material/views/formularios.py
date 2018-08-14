@@ -23,7 +23,6 @@ def emprestar(request):
                 pessoa_retira = Pessoa.objects.get(identidade_militar=identidade_retira, senha=senha_retira)
             except:
                 return HttpResponse('<center><h1>Usuários ou senhas <u>INCORRETAS</u>!</h1></center>', status=400)
-                # return HttpResponseRedirect(reverse('emprestar'))
             for item in lista_materiais:
                 item = Material.objects.get(id=item)
                 item.em_reserva = False
@@ -37,7 +36,8 @@ def emprestar(request):
                 )
                 cautela.save()
                 item.save()
-            return HttpResponseRedirect(reverse('imprimir_cautela'))
+            # return HttpResponseRedirect(reverse('imprimir_cautela', kwargs={'identidade': '1111111111'}))
+            return HttpResponse(request, 'imprimir_cautela')
     else:
         formulario = emprestarForm()
     return render(request, 'acoes/emprestar.html', {'formulario': formulario})
