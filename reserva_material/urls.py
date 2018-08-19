@@ -14,6 +14,7 @@ urlpatterns = [
     path('pronto', pdfgen.imprimir_pronto, name='pronto'),
     path('emprestar', formularios.emprestar, name='emprestar'),
     path('receber', formularios.receber, name='receber'),
+    path('cadastrar_pessoa', formularios.cadastrar_pessoa, name='cadastrar_pessoa'),
     path('login', auth_views.login, {'template_name': 'acesso/login.html'}, name='login'),
     path('logout', auth_views.logout, {'next_page': 'deslogado'}, name='logout'),
     path('imprimir_pronto', pdfgen.imprimir_pronto, name='imprimir_pronto'),

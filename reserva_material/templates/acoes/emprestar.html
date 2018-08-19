@@ -5,9 +5,6 @@
 {% block title %}Emprestar Material{% endblock %}
 
 {% block content %}
-<div class="alert alert-dark text-center text-white bg-dark" role="alert">
-  {{status}}
-</div>
   <form action="emprestar" method="POST">
     {% csrf_token %}
     <div class="form-group">
@@ -36,5 +33,5 @@
     <button type="submit" class="btn btn-primary">Emprestar</button>
   </form>
 
-  <script type="text/javascript" src="/media/scripts/formularios.js"></script>
+  <script type="text/javascript" src="{% static 'js/formularios.js' %}"></script>
 {% endblock %}

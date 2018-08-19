@@ -19,7 +19,7 @@ def gerar_pdf(request, titulo):
 
 def gerar_cabecalho(canvas):
     canvas.setFont('Times-Bold', 12)
-    canvas.drawImage('media/images/selo.png', width/2-50, height-100, 100, 100)
+    canvas.drawImage('reserva_material/media/images/selo.png', width/2-50, height-100, 100, 100)
     posicao_y = height-120
     subordinacao = (
         'MINISTÉRIO DA DEFESA',

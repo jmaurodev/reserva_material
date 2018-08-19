@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load filters %}
+
+{% block title %}Cadastrar Pessoa{% endblock %}
+
+{% block content %}
+  <form action="cadastrar_pessoa" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+      <label>Nome Completo</label>
+      {{formulario.nome_completo|addclass:'form-control'}}
+      <label>Nome de Guerra</label>
+      {{formulario.nome_guerra|addclass:'form-control'}}
+      <label>Posto/Graduação</label>
+      {{formulario.posto_graduacao|addclass:'form-control'}}
+      <label>Identidade Civil</label>
+      {{formulario.identidade_civil|addclass:'form-control'}}
+      <label>Identidade Militar</label>
+      {{formulario.identidade_militar|addclass:'form-control'}}
+      <label>CPF</label>
+      {{formulario.cpf|addclass:'form-control'}}
+      <label>Senha</label>
+      {{formulario.senha|addclass:'form-control'}}
+      <label>Quartel Atual</label>
+      {{formulario.quartel_atual|addclass:'form-control'}}
+      <label>Telefone Pessoal</label>
+      {{formulario.telefone_pessoal|addclass:'form-control'}}
+      <span class="form-text text-muted">Adicionar DDD. Ex.: 21999999999</span>
+      <label>Telefone do Quartel</label>
+      {{formulario.telefone_quartel|addclass:'form-control'}}
+      <span class="form-text text-muted">Adicionar DDD. Ex.: 2133333333</span>
+      <label>E-mail</label>
+      {{formulario.email|addclass:'form-control'}}
+      <label>Foto</label>
+      {{formulario.foto|addclass:'form-control'}}
+    </div>
+    <button type="submit" class="btn btn-primary">Cadastrar</button>
+  </form>
+{% endblock %}

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from reserva_material.models import Pessoa, Quartel, Material, Cautela
-from reserva_material.forms import emprestarForm, receberForm
+from reserva_material.forms import emprestarForm, receberForm, CadastrarPessoa
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import HttpResponseRedirect, HttpResponse
@@ -69,3 +69,29 @@ def receber(request):
     else:
         formulario = receberForm()
     return render(request, 'acoes/receber.html', {'formulario': formulario})
+
+@login_required
+def cadastrar_pessoa(request):
+    if request.method == 'POST':
+        formulario = CadastrarPessoa(request.POST)
+        # return HttpResponse('Antes de validar!')
+        if not formulario.is_valid():
+            # return HttpResponse('Após validar!')
+            pessoa = Pessoa(
+                nome_completo = request.POST.get('nome_completo'),
+                nome_guerra = request.POST.get('nome_guerra'),
+                posto_graduacao = request.POST.get('posto_graduacao'),
+                identidade_civil = request.POST.get('identidade_civil'),
+                identidade_militar = request.POST.get('identidade_militar'),
+                cpf = request.POST.get('cpf'),
+                senha = request.POST.get('senha'),
+                quartel_atual = Quartel.objects.get(id=request.POST.get('quartel_atual')),
+                telefone_pessoal = request.POST.get('telefone_pessoal'),
+                telefone_quartel = request.POST.get('telefone_quartel'),
+                email = request.POST.get('email')
+                )
+            pessoa.save()
+            return HttpResponse('Pessoa registrada com sucesso!')
+    else:
+        formulario = CadastrarPessoa()
+    return render(request, 'acoes/cadastrar_pessoa.html', {'formulario': formulario})
