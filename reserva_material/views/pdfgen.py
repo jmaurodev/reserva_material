@@ -8,6 +8,8 @@ from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
+from datetime import datetime, timedelta
+
 width, height = A4
 
 def gerar_pdf(request, titulo):
@@ -121,6 +123,27 @@ def imprimir_pronto(request):
     c.save()
     return response
 
+def gerar_assinatura(canvas):
+    posicao_y = 50
+    canvas.setFont('Times-Bold', 12)
+    texto = (
+        '_________________________________________________',
+        'NOME COMPLETO - P/G',
+        '',
+    )
+    for linha in texto:
+        canvas.drawCentredString(width/2, posicao_y, linha)
+        posicao_y -= 20
+    posicao_y -= 20
+    canvas.setFont('Times-Roman', 12)
+    datahora = datetime.now()
+    data_inicio = datahora.strftime("%d-%m-%Y %H:%M:%S")
+    canvas.drawString(10, 10, 'INÍCIO: ' + data_inicio)
+    datahora = datahora + timedelta(days=30)
+    data_vencimento = datahora.strftime("%d-%m-%Y %H:%M:%S")
+    canvas.drawRightString(width-10, 10, 'VENCIMENTO: ' + data_vencimento)
+    return canvas
+
 @login_required
 def imprimir_cautela(request):
     response = gerar_pdf(request, 'CAUTELA')
@@ -129,7 +152,7 @@ def imprimir_cautela(request):
     c.setFont('Times-Roman', 12)
     c, posicao_y = gerar_texto_cautela(c, posicao_y)
     c = gerar_tabela_cautela(c, posicao_y)
-    c.drawString(100, 100, "teste")
+    c = gerar_assinatura(c)
     c.showPage()
     c.save()
     return response
