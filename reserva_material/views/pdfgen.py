@@ -1,8 +1,6 @@
-from django.shortcuts import render
 from django.http import HttpResponse
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
-from time import gmtime, strftime
 from reserva_material.models import Material, Cautela, Pessoa
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle
@@ -11,43 +9,44 @@ from reportlab.lib import colors
 from datetime import datetime, timedelta
 
 width, height = A4
+estilo_tabela = TableStyle([
+    ('FONTNAME', (0,0), (-1,-1), 'Times-Roman'),
+    ('BOX', (0,0), (-1,-1), 2, colors.black),
+    ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+    ('BOX', (0,0), (-1,0), 2, colors.black),
+    ('INNERGRID', (0,0), (-1,0), 2, colors.black),
+    ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+    ('VALIGN', (0,0), (-1,-1), 'MIDDLE')
+])
 
 def gerar_pdf(request, titulo):
+    datahora = datetime.now()
     response = HttpResponse(content_type='application/pdf')
-    datahora = strftime("%d-%m-%Y %H:%M:%S", gmtime())
-    filename = '%s_%s' % (titulo, datahora)
+    filename = '%s_%s' % (titulo, datahora.strftime("%d-%m-%Y %H:%M:%S"))
     response['Content-Disposition'] = 'attachment; filename="%s.pdf"' % (filename)
-    return response
+    c = canvas.Canvas(response, pagesize=A4)
+    c.setFont('Times-Roman', 12)
+    return response, c, datahora
 
 def gerar_cabecalho(canvas):
     canvas.setFont('Times-Bold', 12)
     canvas.drawImage('reserva_material/media/images/selo.png', width/2-50, height-100, 100, 100)
     posicao_y = height-120
-    subordinacao = (
-        'MINISTÉRIO DA DEFESA',
-        'EXÉRCITO BRASILEIRO',
-        '20ª COMPANHIA DE COMUNICAÇÕES PÁRA-QUEDISTA',
-        '(Pelotão de Transmissões 1945)',
-    )
+    try:
+        subordinacao = open('reserva_material/static/config/cabecalho.txt', 'r')
+    except:
+        return canvas, posicao_y
     for linha in subordinacao:
-        canvas.drawCentredString(width/2, posicao_y, linha)
+        canvas.drawCentredString(width/2, posicao_y, linha[:-1])
         posicao_y -= 10
     posicao_y -= 10
     return canvas, posicao_y
 
 def gerar_texto_cautela(canvas, posicao_y):
     canvas.setFont('Times-Roman', 12)
-    texto = (
-        'Recebi do Pelotão Posto de Comando, da 20ª Companhia de Comunicações Pára-quedista, para uso e',
-        'posterior devolução, o material abaixo relacionado, sendo responsável por qualquer tipo de dano, extravio',
-        'ou mau uso do equipamento.',
-    )
+    texto = open('reserva_material/static/config/texto_cautela.txt', 'r')
     for linha in texto:
-        if linha == texto[0]:
-            canvas.drawString(40, posicao_y, linha)
-            posicao_y -= 10
-            continue
-        canvas.drawString(30, posicao_y, linha)
+        canvas.drawString(30, posicao_y, linha[:-1])
         posicao_y -= 10
     posicao_y -= 10
     return canvas, posicao_y
@@ -66,15 +65,7 @@ def gerar_tabela(canvas, posicao_y):
         qtd_indisponivel = len(Material.objects.filter(nome_material=nome, indisponivel=True))
         data.append([nome, qtd_total, qtd_em_reserva, qtd_em_cautela, qtd_em_manutencao, qtd_indisponivel])
     table = Table(data)
-    table.setStyle(TableStyle([
-    ('FONTNAME', (0,0), (-1,-1), 'Times-Roman'),
-    ('BOX', (0,0), (-1,-1), 2, colors.black),
-    ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
-    ('BOX', (0,0), (-1,0), 2, colors.black),
-    ('INNERGRID', (0,0), (-1,0), 2, colors.black),
-    ('ALIGN', (0,0), (-1,-1), 'CENTER'),
-    ('VALIGN', (0,0), (-1,-1), 'MIDDLE')
-    ]))
+    table.setStyle(estilo_tabela)
     table.wrapOn(canvas, width, height)
     table.drawOn(canvas, 20, posicao_y-20*len(data))
     return canvas
@@ -83,52 +74,33 @@ def gerar_rodape(canvas, texto):
     canvas.drawRightString(width-10, 10, texto)
     return canvas
 
-def gerar_tabela_cautela(canvas, posicao_y):
+def gerar_tabela_cautela(canvas, posicao_y, request):
     header = ['Quantidade', 'Nome do Material', 'Número de Série', 'Alterações']
     data = []
     data.append(header)
-    pessoa = Pessoa.objects.all()[0]
-    cautela = Cautela.objects.filter(pessoa_retirou=pessoa)
-    for registro in cautela:
+    pessoa = Pessoa.objects.get(identidade_militar=request.POST.get('identidade_retira'))
+    lista_materiais = request.POST.getlist('material_cautelado')
+    for item in lista_materiais:
+        item = Material.objects.get(id=item)
         quantidade = 1
-        nome = registro.material_cautelado.nome_material
-        numero_serie = registro.material_cautelado.numero_serie
-        alteracoes = registro.material_cautelado.descricao
+        nome = item.nome_material
+        numero_serie = item.numero_serie
+        alteracoes = item.descricao
         data.append([quantidade, nome, numero_serie, alteracoes])
     table = Table(data)
-    table.setStyle(TableStyle([
-    ('FONTNAME', (0,0), (-1,-1), 'Times-Roman'),
-    ('BOX', (0,0), (-1,-1), 2, colors.black),
-    ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
-    ('BOX', (0,0), (-1,0), 2, colors.black),
-    ('INNERGRID', (0,0), (-1,0), 2, colors.black),
-    ('ALIGN', (0,0), (-1,-1), 'CENTER'),
-    ('VALIGN', (0,0), (-1,-1), 'MIDDLE')
-    ]))
+    table.setStyle(estilo_tabela)
     table.wrapOn(canvas, width, height)
     table.drawOn(canvas, 20, posicao_y-20*len(data))
     return canvas
 
-@login_required
-def imprimir_pronto(request):
-    response = gerar_pdf(request, 'PRONTO')
-    c = canvas.Canvas(response, pagesize=A4)
-    c, posicao_y = gerar_cabecalho(c)
-    c.setFont('Times-Roman', 12)
-    c.drawCentredString(width/2, posicao_y, 'Pronto da reserva de material do Pelotão Posto de Comando')
-    c = gerar_tabela(c, posicao_y)
-    rodape = '1/1'
-    c = gerar_rodape(c, rodape)
-    c.showPage()
-    c.save()
-    return response
-
-def gerar_assinatura(canvas):
+def gerar_assinatura(canvas, request):
     posicao_y = 50
+    pessoa = Pessoa.objects.get(identidade_militar=request.POST.get('identidade_retira'))
     canvas.setFont('Times-Bold', 12)
     texto = (
         '_________________________________________________',
-        'NOME COMPLETO - P/G',
+        # 'NOME COMPLETO - P/G',
+        '%s - %s' % (pessoa.nome_completo, pessoa.posto_graduacao),
         '',
     )
     for linha in texto:
@@ -136,23 +108,41 @@ def gerar_assinatura(canvas):
         posicao_y -= 20
     posicao_y -= 20
     canvas.setFont('Times-Roman', 12)
-    datahora = datetime.now()
-    data_inicio = datahora.strftime("%d-%m-%Y %H:%M:%S")
-    canvas.drawString(10, 10, 'INÍCIO: ' + data_inicio)
+    return canvas
+
+def gerar_rodape(canvas, datahora):
+    canvas.drawString(10, 10, 'INÍCIO: ' + datahora.strftime("%d-%m-%Y %H:%M:%S"))
     datahora = datahora + timedelta(days=30)
-    data_vencimento = datahora.strftime("%d-%m-%Y %H:%M:%S")
-    canvas.drawRightString(width-10, 10, 'VENCIMENTO: ' + data_vencimento)
+    canvas.drawRightString(width-10, 10, 'VENCIMENTO: ' + datahora.strftime("%d-%m-%Y %H:%M:%S"))
+    return canvas
+
+def estruturar_pdf(canvas, tipo, datahora, request):
+    canvas, posicao_y = gerar_cabecalho(canvas)
+    if tipo == 'CAUTELA':
+        canvas, posicao_y = gerar_texto_cautela(canvas, posicao_y)
+        canvas = gerar_tabela_cautela(canvas, posicao_y, request)
+        canvas = gerar_rodape(canvas, datahora)
+    else:
+        canvas.drawCentredString(width/2, posicao_y, 'Pronto da reserva de material do Pelotão Posto de Comando')
+        canvas = gerar_tabela(canvas, posicao_y)
+        canvas.drawRightString(width-10, 10, 'DATA: ' + datahora.strftime("%d-%m-%Y %H:%M:%S"))
+    canvas = gerar_assinatura(canvas, request)
     return canvas
 
 @login_required
+def imprimir_pronto(request):
+    tipo = 'PRONTO'
+    response, c, datahora = gerar_pdf(request, tipo)
+    c = estruturar_pdf(c, tipo, datahora, request)
+    c.showPage()
+    c.save()
+    return response
+
+@login_required
 def imprimir_cautela(request):
-    response = gerar_pdf(request, 'CAUTELA')
-    c = canvas.Canvas(response, pagesize=A4)
-    c, posicao_y = gerar_cabecalho(c)
-    c.setFont('Times-Roman', 12)
-    c, posicao_y = gerar_texto_cautela(c, posicao_y)
-    c = gerar_tabela_cautela(c, posicao_y)
-    c = gerar_assinatura(c)
+    tipo = 'CAUTELA'
+    response, c, datahora = gerar_pdf(request, tipo)
+    c = estruturar_pdf(c, tipo, datahora, request)
     c.showPage()
     c.save()
     return response

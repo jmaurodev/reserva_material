@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 import datetime
+from reserva_material.views import pdfgen
 
 @login_required
 def emprestar(request):
@@ -37,7 +38,10 @@ def emprestar(request):
                 cautela.save()
                 item.save()
             # return HttpResponseRedirect(reverse('imprimir_cautela', kwargs={'identidade': '1111111111'}))
-            return HttpResponse(request, 'imprimir_cautela')
+            # return HttpResponse(request, 'imprimir_cautela')
+
+            return pdfgen.imprimir_cautela(request)
+            # return HttpResponse('<center><h1><u>SUCESSO</u>!</h1></center>', status=200)
     else:
         formulario = emprestarForm()
     return render(request, 'acoes/emprestar.html', {'formulario': formulario})
