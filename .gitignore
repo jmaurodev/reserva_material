@@ -12,6 +12,3 @@ migrations/
 
 #Ignorar arquivos enviados
 media/
-
-#Ignorar arquivos estáticos da interface de administração
-static/

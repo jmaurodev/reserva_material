@@ -10,7 +10,8 @@ from datetime import datetime, timedelta
 
 width, height = A4
 estilo_tabela = TableStyle([
-    ('FONTNAME', (0,0), (-1,-1), 'Times-Roman'),
+    ('FONTNAME', (0,0), (-1,1), 'Times-Bold'),
+    ('FONTNAME', (0,1), (-1,-1), 'Times-Roman'),
     ('BOX', (0,0), (-1,-1), 2, colors.black),
     ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
     ('BOX', (0,0), (-1,0), 2, colors.black),
@@ -30,7 +31,7 @@ def gerar_pdf(request, titulo):
 
 def gerar_cabecalho(canvas):
     canvas.setFont('Times-Bold', 12)
-    canvas.drawImage('reserva_material/media/images/selo.png', width/2-50, height-100, 100, 100)
+    canvas.drawImage('reserva_material/static/config/selo.png', width/2-50, height-100, 100, 100)
     posicao_y = height-120
     try:
         subordinacao = open('reserva_material/static/config/cabecalho.txt', 'r')
@@ -86,6 +87,8 @@ def gerar_tabela_cautela(canvas, posicao_y, request):
         nome = item.nome_material
         numero_serie = item.numero_serie
         alteracoes = item.descricao
+        if not alteracoes:
+            alteracoes = '-'
         data.append([quantidade, nome, numero_serie, alteracoes])
     table = Table(data)
     table.setStyle(estilo_tabela)
@@ -99,7 +102,6 @@ def gerar_assinatura(canvas, request):
     canvas.setFont('Times-Bold', 12)
     texto = (
         '_________________________________________________',
-        # 'NOME COMPLETO - P/G',
         '%s - %s' % (pessoa.nome_completo, pessoa.posto_graduacao),
         '',
     )
@@ -122,11 +124,11 @@ def estruturar_pdf(canvas, tipo, datahora, request):
         canvas, posicao_y = gerar_texto_cautela(canvas, posicao_y)
         canvas = gerar_tabela_cautela(canvas, posicao_y, request)
         canvas = gerar_rodape(canvas, datahora)
+        canvas = gerar_assinatura(canvas, request)
     else:
         canvas.drawCentredString(width/2, posicao_y, 'Pronto da reserva de material do Pelotão Posto de Comando')
         canvas = gerar_tabela(canvas, posicao_y)
         canvas.drawRightString(width-10, 10, 'DATA: ' + datahora.strftime("%d-%m-%Y %H:%M:%S"))
-    canvas = gerar_assinatura(canvas, request)
     return canvas
 
 @login_required

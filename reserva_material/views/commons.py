@@ -6,6 +6,7 @@ from reserva_material.models import Pessoa, Quartel, Material, Cautela
 def index(request):
     return render(request, 'index.html')
 
+@login_required
 def pessoal(request):
     pessoal = Pessoa.objects.all()
     context = {
@@ -13,6 +14,7 @@ def pessoal(request):
     }
     return render(request, 'relatorios/pessoal.html', context)
 
+@login_required
 def material(request):
     material = Material.objects.all()
     context = {
@@ -27,6 +29,7 @@ def cautelas(request):
     }
     return render(request, 'relatorios/cautelas.html', context)
 
+@login_required
 def cautelas_vencidas(request):
     cautelas = Cautela.objects.all()
     context = {
